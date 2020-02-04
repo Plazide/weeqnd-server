@@ -7,23 +7,86 @@ const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
 class Party extends SpotifyWebApi{
-	constructor ({ _id, code, owner, users, fallbackPlaylist, ws }){
+	constructor ({ _id, code, owner, playlist, users, fallbackPlaylist, accessToken, refreshToken, io }){
 		super();
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
+
 		this._id = _id;
 		this.code = code;
 		this.owner = owner;
-		this.users = users;
+		this.playlist = playlist;
+		this.users = users.data;
 		this.fallbackPlaylist = fallbackPlaylist;
-		this.ws = ws;
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
+		this.io = io.of("/" + code);
+
+		this.rejectedTokens = [];
 
 		this.start();
 	}
 
+	setAccessToken (token){
+		this.accessToken = token;
+	}
+
+	setRefreshToken (token){
+		this.refreshToken = token;
+	}
+
 	start (){
-		this.ws.on("connection", (socket) => {
-			console.log("Client connected!");
+		this.io.to(this.code);
+
+		this.io.on("connection", async (socket) => {
+			try{
+				const accessToken = socket.handshake.query.accessToken;
+
+				if(this.rejectedTokens.includes(accessToken)){
+					socket.disconnect();
+					return;
+				}
+
+				const spotify = new SpotifyWebApi({ accessToken });
+				const me = await spotify.getMe().catch( err => {
+					return err;
+				});
+				if(me.statusCode === 401){
+					socket.emit("err", { type: "invalid_token" });
+					socket.disconnect();
+					return;
+				}
+
+				const username = me.body.id;
+
+				const userFound = this.users.find( user => user.name === username);
+				if(!userFound){
+					this.rejectedTokens.push(accessToken);
+					socket.disconnect();
+					return;
+				}
+
+				socket.join(this.code);
+
+				socket.on("add-track", async data => {
+					try{
+						const{ trackId } = data;
+						const status = await this.addTrack(trackId);
+
+						if(status === "conflict")
+							socket.emit("err", { type: "track_exists" });
+
+						if(status === "success"){
+							socket.emit("success", { type: "track_added" });
+							this.io.emit("track_added", { trackId });
+						}
+					}catch(err){
+						console.error(err);
+					}
+				});
+			}catch(err){
+				throw new Error(err);
+			}
 		});
 	}
 
@@ -34,15 +97,13 @@ class Party extends SpotifyWebApi{
 
 		const updateAccessToken = gql`
 		mutation {
-			updateParty(id: "${this.ID}", data: {
+			partialUpdateParty(id: "${this.ID}", data: {
 				accessToken: "${accessToken}"
 				refreshToken: "${refreshToken}"
-				owner: "${this.owner}"
-				code: ${this.code}
-				fallbackPlaylist: "${this.fallbackPlaylist}"
 			}){
 				accessToken
 				refreshToken
+				owner
 			}
 		}
 		`;
@@ -52,6 +113,28 @@ class Party extends SpotifyWebApi{
 		this.setAccessToken(update.data.updateParty.accessToken);
 		this.setRefreshToken(update.data.updateParty.refreshToken);
 		return true;
+	}
+
+	async addTrack (id){
+		try{
+			if(this.playlist.includes(id))
+				return"conflict";
+
+			this.playlist.push(id);
+
+			const query = gql`
+			mutation {
+				updatePlaylist ( id: ${this._id}, data: "${id}"){
+					playlist
+				}
+			}
+			`;
+
+			const result = await client.mutate({ mutation: query });
+			return"success";
+		}catch(err){
+			console.error(err);
+		}
 	}
 }
 
