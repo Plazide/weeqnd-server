@@ -17,7 +17,12 @@ class Controller{
 				data{
 					code
 					owner
-					users
+					users {
+						data {
+							name
+							_id
+						}
+					}
 					fallbackPlaylist
 					playlist
 					accessToken
@@ -30,7 +35,7 @@ class Controller{
 		const result = await client.query({ query: allParty });
 		const parties = result.data.allParty.data;
 		parties.forEach( item => {
-			const party = new Party({ ...item, ws: this.io });
+			const party = new Party({ ...item, io: this.io });
 			this.parties.push(party);
 			// console.log(this.parties);
 		});
