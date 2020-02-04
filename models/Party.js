@@ -130,10 +130,12 @@ class Party extends SpotifyWebApi{
 			}
 			`;
 
-			const result = await client.mutate({ mutation: query });
+			await client.mutate({ mutation: query });
 			return"success";
 		}catch(err){
 			console.error(err);
+
+			return"error";
 		}
 	}
 }
