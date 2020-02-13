@@ -77,8 +77,8 @@ class Party extends SpotifyWebApi{
 							socket.emit("err", { type: "track_exists" });
 
 						if(status === "success"){
-							socket.emit("success", { type: "track_added" });
 							this.io.emit("track_added", { trackId });
+							socket.emit("success", { type: "track_added" });
 						}
 					}catch(err){
 						console.error(err);
