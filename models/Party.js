@@ -66,12 +66,13 @@ class Party extends SpotifyWebApi{
 					return;
 				}
 
+				socket.username = username;
 				socket.join(this.code);
 
 				socket.on("add-track", async data => {
 					try{
 						const{ trackId } = data;
-						const status = await this.addTrack(trackId);
+						const status = await this.addTrack(trackId, socket.username);
 
 						if(status === "conflict")
 							socket.emit("err", { type: "track_exists" });
@@ -115,16 +116,17 @@ class Party extends SpotifyWebApi{
 		return true;
 	}
 
-	async addTrack (id){
+	async addTrack (id, username){
 		try{
 			if(this.playlist.includes(id))
 				return"conflict";
 
-			this.playlist.push(id);
+			const track = id + ":" + username;
+			this.playlist.push(track);
 
 			const query = gql`
 			mutation {
-				updatePlaylist ( id: ${this._id}, data: "${id}"){
+				updatePlaylist ( id: ${this._id}, data: ${track}){
 					playlist
 				}
 			}
