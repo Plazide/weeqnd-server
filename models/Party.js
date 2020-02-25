@@ -121,7 +121,7 @@ class Party extends SpotifyWebApi{
 			if(this.playlist.includes(id))
 				return"conflict";
 
-			const track = id + ":" + username;
+			const track = id + ":" + username + ":" + Date.now();
 			this.playlist.push(track);
 
 			const query = gql`
