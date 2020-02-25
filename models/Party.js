@@ -126,7 +126,7 @@ class Party extends SpotifyWebApi{
 
 			const query = gql`
 			mutation {
-				updatePlaylist ( id: ${this._id}, data: ${track}){
+				updatePlaylist ( id: ${this._id}, data: "${track}"){
 					playlist
 				}
 			}
