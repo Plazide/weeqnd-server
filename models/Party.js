@@ -1,6 +1,7 @@
 const SpotifyWebApi = require("spotify-web-api-node");
 const client = require("../util/ApolloClient");
 const gql = require("graphql-tag");
+const isInPlaylist = require("../util/isInPlaylist");
 require("dotenv").config();
 
 const clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -78,10 +79,32 @@ class Party extends SpotifyWebApi{
 							socket.emit("err", { type: "track_exists" });
 
 						if(status === "success"){
-							this.io.emit("track_added", { trackId });
+							this.io.emit("track_added", { trackId, playlist: this.playlist });
 							socket.emit("success", { type: "track_added" });
 						}
 					}catch(err){
+						console.error(err);
+					}
+				});
+
+				socket.on("remove-track", async data => {
+					try{
+						const status = await this.removeTrack(data, socket.username);
+						const trackId = data.id + ":" + data.username + ":" + data.timeAdded;
+
+						if(status === "not_allowed")
+							socket.emit("err", { type: "wrong_track_user" });
+
+						if(status === "conflict"){
+							this.io.emit("track_removed", { trackId });
+							socket.emit("success", { type: "track_already_gone" });
+						}
+
+						if(status === "success"){
+							this.io.emit("track_removed", { trackId, playlist: this.playlist });
+							socket.emit("success", { type: "track_removed" });
+						}
+					}catch(err) {
 						console.error(err);
 					}
 				});
@@ -118,11 +141,12 @@ class Party extends SpotifyWebApi{
 
 	async addTrack (id, username){
 		try{
-			if(this.playlist.includes(id))
+			const inPlaylist = isInPlaylist(this.playlist, id);
+
+			if(inPlaylist)
 				return"conflict";
 
 			const track = id + ":" + username + ":" + Date.now();
-			this.playlist.push(track);
 
 			const query = gql`
 			mutation {
@@ -132,9 +156,43 @@ class Party extends SpotifyWebApi{
 			}
 			`;
 
-			await client.mutate({ mutation: query });
+			const result = await client.mutate({ mutation: query });
+			const newPlaylist = result.data.updatePlaylist.playlist;
+			this.playlist = newPlaylist;
 			return"success";
 		}catch(err){
+			console.error(err);
+
+			return"error";
+		}
+	}
+
+	async removeTrack (data, storedUsername){
+		try{
+			const{ id, username, timeAdded } = data;
+			const trackId = id + ":" + username + ":" + timeAdded;
+			const inPlaylist = isInPlaylist(this.playlist, id);
+
+			if(username !== storedUsername)
+				return"not_allowed";
+
+			if(!inPlaylist)
+				return"conflict";
+
+			// Update playlist in database.
+			const query = gql`
+			mutation {
+				removeFromPlaylist( id: ${this._id}, data: "${trackId}"){
+					playlist
+				}
+			}
+			`;
+
+			const result = await client.mutate({ mutation: query });
+			const newPlaylist = result.data.removeFromPlaylist.playlist;
+			this.playlist = newPlaylist;
+			return"success";
+		}catch(err) {
 			console.error(err);
 
 			return"error";
