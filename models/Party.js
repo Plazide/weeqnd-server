@@ -83,6 +83,8 @@ class Party extends SpotifyWebApi{
 							socket.emit("success", { type: "track_added" });
 						}
 					}catch(err){
+						socket.emit("err", { type: "unknown" });
+
 						console.error(err);
 					}
 				});
@@ -96,7 +98,7 @@ class Party extends SpotifyWebApi{
 							socket.emit("err", { type: "wrong_track_user" });
 
 						if(status === "conflict"){
-							this.io.emit("track_removed", { trackId });
+							this.io.emit("track_removed", { trackId, playlist: this.playlist });
 							socket.emit("success", { type: "track_already_gone" });
 						}
 
@@ -105,6 +107,8 @@ class Party extends SpotifyWebApi{
 							socket.emit("success", { type: "track_removed" });
 						}
 					}catch(err) {
+						socket.emit("err", { type: "unknown" });
+
 						console.error(err);
 					}
 				});
