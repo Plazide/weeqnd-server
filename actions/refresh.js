@@ -3,16 +3,15 @@ const gql = require("graphql-tag");
 
 /**
  * Refresh access token of provided party.
- * @param {object} party Instance of party to refresh.
  */
-async function refresh (party){
-	const result = await party.refreshAccessToken();
+async function refresh (){
+	const result = await this.refreshAccessToken().catch( err => err);
 	const accessToken = result.body["access_token"];
-	const refreshToken = result.body["refresh_token"] || party.refreshToken;
+	const refreshToken = result.body["refresh_token"] || this.refreshToken;
 
 	const updateAccessToken = gql`
 		mutation {
-			partialUpdateParty(id: "${party.ID}", data: {
+			partialUpdateParty(id: "${this._id}", data: {
 				accessToken: "${accessToken}"
 				refreshToken: "${refreshToken}"
 			}){
@@ -23,10 +22,10 @@ async function refresh (party){
 		}
 		`;
 
-	const update = await client.mutation({ mutate: updateAccessToken });
+	const update = await client.mutate({ mutation: updateAccessToken });
 
-	party.setAccessToken(update.data.updateParty.accessToken);
-	party.setRefreshToken(update.data.updateParty.refreshToken);
+	this.setAccessToken(update.data.partialUpdateParty.accessToken);
+	this.setRefreshToken(update.data.partialUpdateParty.refreshToken);
 	return true;
 }
 
