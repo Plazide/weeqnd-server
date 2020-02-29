@@ -10,7 +10,8 @@ const client = new ApolloClient({
 	request: operation => {
 		operation.setContext({
 			headers: {
-				"Authorization": `Bearer ${process.env.FAUNADB_SECRET}`
+				"Authorization": `Bearer ${process.env.FAUNADB_SECRET}`,
+				"X-Schema-Preview": "partial-update-mutation"
 			}
 		});
 	}
