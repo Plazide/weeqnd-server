@@ -12,3 +12,7 @@ server.listen(port, (err) => {
 	controller.init(io);
 	console.log("Server listening to port", port);
 });
+
+process.on("unhandledRejection", err => {
+	console.error(err);
+});
