@@ -32,15 +32,11 @@ async function refresh (){
 				}
 			}
 			`;
-
 		await client.mutate({ mutation: updateAccessToken });
 
-		this.io.clients( (err, clients) => {
-			if(err) throw err;
-
-			const ownerSocket = clients.find( client => client.username === this.owner);
-			ownerSocket.emit("token_refreshed", { accessToken });
-		});
+		// Notify owner of the party that access token changed.
+		const ownerSocket = this.getOwner();
+		ownerSocket.emit("refreshed_token", { accessToken });
 
 		console.log("Access token refreshed!");
 		return true;

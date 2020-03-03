@@ -5,9 +5,10 @@ const connectionHandler = require("../handlers/connectionHandler");
 const spotifyHandler = require("../handlers/spotifyHandler");
 
 // Actions
-const addTrack = require("../actions/addTrack");
-const removeTrack = require("../actions/removeTrack");
-const refresh = require("../actions/refresh");
+const addTrack = require("../methods/addTrack");
+const removeTrack = require("../methods/removeTrack");
+const refresh = require("../methods/refresh");
+const getOwner = require("../methods/getOwner");
 
 require("dotenv").config();
 
@@ -54,5 +55,6 @@ class Party extends SpotifyWebApi{
 Party.prototype.addTrack = addTrack;
 Party.prototype.removeTrack = removeTrack;
 Party.prototype.refresh = refresh;
+Party.prototype.getOwner = getOwner;
 
 module.exports = Party;
