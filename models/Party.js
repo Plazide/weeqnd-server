@@ -1,5 +1,8 @@
 const SpotifyWebApi = require("spotify-web-api-node");
+
+// Handlers
 const connectionHandler = require("../handlers/connectionHandler");
+const spotifyHandler = require("../handlers/spotifyHandler");
 
 // Actions
 const addTrack = require("../actions/addTrack");
@@ -12,10 +15,8 @@ const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
 class Party extends SpotifyWebApi{
-	constructor ({ _id, code, owner, playlist, users, fallbackPlaylist, accessToken, refreshToken, io }){
-		super();
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
+	constructor ({ _id, code, owner, playlist, users, fallbackPlaylist, refreshToken, accessToken, io }){
+		super({ clientId, clientSecret, refreshToken, accessToken });
 
 		this._id = _id;
 		this.code = code;
@@ -23,9 +24,8 @@ class Party extends SpotifyWebApi{
 		this.playlist = playlist;
 		this.users = users.data;
 		this.fallbackPlaylist = fallbackPlaylist;
-		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
 		this.io = io.of("/" + code);
+		this.active = true;
 
 		this.rejectedTokens = [];
 
@@ -42,6 +42,8 @@ class Party extends SpotifyWebApi{
 
 	start (){
 		this.io.to(this.code);
+
+		spotifyHandler(this);
 
 		this.io.on("connection", socket => {
 			connectionHandler(socket, this);
