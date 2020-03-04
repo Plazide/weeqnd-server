@@ -41,7 +41,7 @@ async function refresh (){
 		console.log("Access token refreshed!");
 		return true;
 	}catch(err){
-		if(err)	throw Error("Failed to refresh access token", err);
+		if(err)	throw Error(`Failed to refresh access token: ${err}`);
 
 		return false;
 	}
