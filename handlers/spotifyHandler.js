@@ -5,7 +5,6 @@ const removeTracks = require("../util/removeTracks");
 async function spotifyHandler (party){
 	console.log("Starting Spotify handler...");
 	const defaultWait = 1000 * 30;
-	let previousPlaylist = [];
 
 	const handler = async () => {
 		try{
@@ -15,7 +14,9 @@ async function spotifyHandler (party){
 				progress,
 				isPlaying,
 				currentPlaylist,
-				id
+				id,
+				deviceId,
+				playbackActive
 			} = await fetchMetaInfo(party);
 			const remaining = duration - progress;
 
@@ -26,12 +27,12 @@ async function spotifyHandler (party){
 				progress,
 				listId,
 				currentPlaylist,
-				previousPlaylist
+				deviceId,
+				playbackActive
 			});
 
 			const wait = isPlaying ? (remaining + 1000 || defaultWait) : defaultWait;
-			console.log("wait", wait);
-			previousPlaylist = currentPlaylist;
+			console.log("\n⏰  Waiting", wait / 1000, "seconds\n");
 			setTimeout(handler, wait);
 		}catch(err){
 			console.error("An error occurred", err);
