@@ -19,7 +19,7 @@ async function playbackHandler (party,
 		return;
 
 	console.log("Trying to play tracks...");
-	if(!isPlaying && party.active){
+	if(!playbackActive && party.active){
 		if(currentPlaylist.length > 0)
 			await party.play({
 				uris: currentPlaylist,
