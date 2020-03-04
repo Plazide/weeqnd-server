@@ -33,14 +33,6 @@ class Party extends SpotifyWebApi{
 		this.start();
 	}
 
-	setAccessToken (token){
-		this.accessToken = token;
-	}
-
-	setRefreshToken (token){
-		this.refreshToken = token;
-	}
-
 	start (){
 		this.io.to(this.code);
 
