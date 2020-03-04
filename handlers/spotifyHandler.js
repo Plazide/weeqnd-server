@@ -40,7 +40,7 @@ async function spotifyHandler (party){
 			if(err.statusCode === 401 || err.statusCode === 403){
 				const success = await party.refresh();
 				if(success)
-					spotifyHandler(party);
+					handler();
 				else
 					throw Error("Could not refresh access token");
 			}
