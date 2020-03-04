@@ -13,7 +13,7 @@ async function removeTracks (party, { currentPlaylist, id }){
 		return trackId === id;
 	});
 
-	const deletedItems = currentTrackIndex > -1 ? currentPlaylist.splice(0, currentTrackIndex + 1) : [];
+	const deletedItems = currentTrackIndex > -1 ? currentPlaylist.splice(0, currentTrackIndex) : [];
 	await removePlayedTracks(deletedItems, party);
 }
 
