@@ -3,6 +3,9 @@ const gql = require("graphql-tag");
 const findTrackById = require("../util/findTrackById");
 
 async function removeTracks (party, { currentPlaylist, id }){
+	console.log("");
+	console.log("⏲️  Trying to remove played tracks.");
+
 	const currentTrackIndex = currentPlaylist.findIndex( track => {
 		const parts = track.split(":");
 		const trackId = parts[2];
@@ -16,12 +19,8 @@ async function removeTracks (party, { currentPlaylist, id }){
 
 async function removePlayedTracks (trackIds, party){
 	try{
-		console.log("");
-		console.log("Trying to remove tracks...");
-
 		if(trackIds.length === 0){
-			console.log("Empty array provided. Not removing anything.");
-			console.log("");
+			console.log("❌  There are no tracks to remove.");
 			return;
 		}
 
@@ -44,8 +43,7 @@ async function removePlayedTracks (trackIds, party){
 		party.playlist = playlist;
 
 		party.io.emit("track_removed", { trackId: "", playlist });
-		console.log(`Removed ${trackIds.length} tracks from playlist.`);
-		console.log("");
+		console.log(`✔️  Removed ${trackIds.length} tracks from playlist.`);
 	}catch(err){
 		console.error(err);
 	}

@@ -1,6 +1,9 @@
 const extractFromTrack = require("../util/extractFromTrack");
 
 async function fetchMetaInfo (party){
+	console.log("");
+	console.log("⏲️  Fetching information about playback, fallback playlist, and active devices...");
+
 	const listParts = party.fallbackPlaylist.split("/");
 	const listId = listParts[listParts.length - 1];
 
@@ -44,7 +47,10 @@ async function fetchMetaInfo (party){
 		item: { duration_ms: duration, uri, id } = "",
 		is_playing: isPlaying
 	} = currentPlayback.body;
-	const deviceId = devices[0].id;
+	const playbackActive = currentPlayback.statusCode === 200;
+	const deviceId = devices.length > 0 ? devices[0].id : "";
+
+	console.log("✔️  Information has been fetched and parsed.");
 
 	return{
 		listId,
@@ -55,7 +61,8 @@ async function fetchMetaInfo (party){
 		isPlaying,
 		progress,
 		currentPlaylist,
-		uri
+		uri,
+		playbackActive
 	};
 }
 
