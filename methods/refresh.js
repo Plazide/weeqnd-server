@@ -6,7 +6,8 @@ const gql = require("graphql-tag");
  */
 async function refresh (){
 	try{
-		console.log("Refreshing access token...");
+		console.log("");
+		console.log("♻️  Refreshing access token...");
 
 		const result = await this.refreshAccessToken().catch( err => {
 			console.error(err);
@@ -36,12 +37,14 @@ async function refresh (){
 
 		// Notify owner of the party that access token changed.
 		const ownerSocket = this.getOwner();
-		ownerSocket.emit("refreshed_token", { accessToken });
+		if(ownerSocket)
+			ownerSocket.emit("refreshed_token", { accessToken });
 
-		console.log("Access token refreshed!");
+		console.log("✔️  Access token refreshed!");
 		return true;
 	}catch(err){
-		if(err)	throw Error(`Failed to refresh access token: ${err}`);
+		if(err)
+			console.error("❌  There was an error refreshing the access token", err);
 
 		return false;
 	}
