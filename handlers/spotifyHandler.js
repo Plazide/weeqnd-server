@@ -32,7 +32,7 @@ async function spotifyHandler (party){
 			});
 
 			const wait = isPlaying ? (remaining + 1000 || defaultWait) : defaultWait;
-			console.log("\n⏰  Waiting", wait / 1000, "seconds\n");
+			console.log("\n⏰  Waiting", wait / 1000, "seconds...");
 			setTimeout(handler, wait);
 		}catch(err){
 			console.error("An error occurred", err);
