@@ -57,7 +57,11 @@ async function playbackHandler (party,
 			console.log("✔️  Track ended, playing fallback playlist.");
 			await party.play({ context_uri: `spotify:playlist:${listId}` });
 		}
+
+		return;
 	}
+
+	console.log("✔️  No action required, a track is currently playing");
 }
 
 module.exports = playbackHandler;
