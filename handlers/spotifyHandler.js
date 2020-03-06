@@ -14,6 +14,7 @@ async function spotifyHandler (party){
 				progress,
 				isPlaying,
 				currentPlaylist,
+				fallbackPlaylist,
 				id,
 				deviceId,
 				playbackActive
@@ -27,6 +28,7 @@ async function spotifyHandler (party){
 				progress,
 				listId,
 				currentPlaylist,
+				fallbackPlaylist,
 				deviceId,
 				playbackActive
 			});

@@ -5,21 +5,24 @@ async function playbackHandler (party,
 		progress,
 		listId,
 		currentPlaylist,
+		fallbackPlaylist,
 		deviceId,
 		playbackActive
 	}){
 	console.log("");
 	console.log("⏲️  Trying to play tracks...");
 
+	console.log(currentPlaylist);
+
 	const paddingTime = 2000;
 
-	if(!deviceId){
-		console.log("❌  No device id was found, cannot play anything.");
+	if(!party.active){
+		console.log("❌  Party is not active, do not do anything.");
 		return;
 	}
 
-	if(!playbackActive && !party.active){
-		console.log("❌  There is not active playback and the party is not active, so do not play anyting.");
+	if(!deviceId){
+		console.log("❌  No device id was found, cannot play anything.");
 		return;
 	}
 
@@ -50,13 +53,14 @@ async function playbackHandler (party,
 		if(currentPlaylist.length > 0){
 			console.log("✔️  Track ended, playing current playlist.");
 
-			await party.play({ uris: currentPlaylist, offset: { uri: currentPlaylist[0] } });
+			const trackList = [...currentPlaylist, ...fallbackPlaylist];
+			await party.play({ uris: trackList, offset: { uri: currentPlaylist[0] } });
 		}
 
-		if(currentPlaylist.length === 0){
+		/* if(currentPlaylist.length === 0){
 			console.log("✔️  Track ended, playing fallback playlist.");
 			await party.play({ context_uri: `spotify:playlist:${listId}` });
-		}
+		} */
 
 		return;
 	}
