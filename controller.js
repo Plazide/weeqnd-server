@@ -17,6 +17,7 @@ class Controller{
 				data{
 					code
 					owner
+					active
 					users {
 						data {
 							name
