@@ -44,6 +44,7 @@ async function fetchMetaInfo (party){
 	// eslint-disable-next-line camelcase
 	const{
 		progress_ms: progress,
+		item: currentTrack,
 		item: { duration_ms: duration, uri, id } = "",
 		is_playing: isPlaying
 	} = currentPlayback.body;
@@ -56,6 +57,7 @@ async function fetchMetaInfo (party){
 		listId,
 		deviceId,
 		fallbackPlaylist,
+		currentTrack,
 		duration,
 		id,
 		isPlaying,
