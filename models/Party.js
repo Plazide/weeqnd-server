@@ -10,6 +10,7 @@ const removeTrack = require("../methods/removeTrack");
 const refresh = require("../methods/refresh");
 const getOwner = require("../methods/getOwner");
 const updateCurrentTrack = require("../methods/updateCurrentTrack");
+const activate = require("../methods/activate");
 
 require("dotenv").config();
 
@@ -50,5 +51,6 @@ Party.prototype.removeTrack = removeTrack;
 Party.prototype.refresh = refresh;
 Party.prototype.getOwner = getOwner;
 Party.prototype.updateCurrentTrack = updateCurrentTrack;
+Party.prototype.activate = activate;
 
 module.exports = Party;

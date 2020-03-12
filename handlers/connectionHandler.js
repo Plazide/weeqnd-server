@@ -13,6 +13,9 @@ async function connectionHandler (socket, party){
 
 		socket.on("add-track", function (data){ addTrack(data, socket, party); });
 		socket.on("remove-track", function (data){ removeTrack(data, socket, party); });
+
+		if(socket.username === party.owner)
+			socket.on("activate-party", function (){ party.activate(socket); });
 	}catch(err){
 		throw new Error(err);
 	}
