@@ -17,7 +17,7 @@ const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
 class Party extends SpotifyWebApi{
-	constructor ({ _id, code, owner, playlist, users, fallbackPlaylist, refreshToken, accessToken, io }){
+	constructor ({ _id, code, owner, playlist, users, active, fallbackPlaylist, refreshToken, accessToken, io }){
 		super({ clientId, clientSecret, refreshToken, accessToken });
 
 		this._id = _id;
@@ -27,7 +27,7 @@ class Party extends SpotifyWebApi{
 		this.users = users.data;
 		this.fallbackPlaylist = fallbackPlaylist;
 		this.io = io.of("/" + code);
-		this.active = true;
+		this.active = active;
 
 		this.rejectedTokens = [];
 
