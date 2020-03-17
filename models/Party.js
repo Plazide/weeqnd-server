@@ -12,6 +12,7 @@ const getOwner = require("../methods/getOwner");
 const updateCurrentTrack = require("../methods/updateCurrentTrack");
 const activate = require("../methods/activate");
 const deactivate = require("../methods/deactivate");
+const updateFallbackPlaylist = require("../methods/updateFallbackPlaylist");
 
 require("dotenv").config();
 
@@ -19,7 +20,7 @@ const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
 class Party extends SpotifyWebApi{
-	constructor ({ _id, code, owner, playlist, users, active, fallbackPlaylist, refreshToken, accessToken, io }){
+	constructor({ _id, code, owner, playlist, users, active, fallbackPlaylist, refreshToken, accessToken, io }){
 		super({ clientId, clientSecret, refreshToken, accessToken });
 
 		this._id = _id;
@@ -36,7 +37,7 @@ class Party extends SpotifyWebApi{
 		this.start();
 	}
 
-	start (){
+	start(){
 		this.io.to(this.code);
 
 		spotifyHandler(this);
@@ -54,5 +55,6 @@ Party.prototype.getOwner = getOwner;
 Party.prototype.updateCurrentTrack = updateCurrentTrack;
 Party.prototype.activate = activate;
 Party.prototype.deactivate = deactivate;
+Party.prototype.updateFallbackPlaylist = updateFallbackPlaylist;
 
 module.exports = Party;

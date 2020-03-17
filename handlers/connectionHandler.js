@@ -7,7 +7,7 @@ const removeTrack = require("./removeTrack");
  * @param {object} socket - The socket passed generated on a new connection
  * @param {object} party Instance of Party.
  */
-async function connectionHandler (socket, party){
+async function connectionHandler(socket, party){
 	try{
 		await authorize(socket, party);
 
@@ -17,6 +17,7 @@ async function connectionHandler (socket, party){
 		if(socket.username === party.owner){
 			socket.on("activate-party", function (){ party.activate(socket); });
 			socket.on("deactivate-party", function (){ party.deactivate(socket); });
+			socket.on("update-fallback", function (data){ party.updateFallbackPlaylist(data, socket); });
 		}
 	}catch(err){
 		throw new Error(err);
