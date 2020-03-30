@@ -8,8 +8,10 @@ const isInPlaylist = require("../util/isInPlaylist");
  * @param {string} username - A spotify username.
  * @param {object} party - Instance of a Party
  */
-async function addTrack (id, username, party){
+async function addTrack(id, username, party){
 	try{
+		if(!this.active) return"error";
+
 		const inPlaylist = isInPlaylist(party.playlist, id);
 
 		if(inPlaylist)
