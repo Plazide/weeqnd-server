@@ -13,6 +13,7 @@ const updateCurrentTrack = require("../methods/updateCurrentTrack");
 const activate = require("../methods/activate");
 const deactivate = require("../methods/deactivate");
 const updateFallbackPlaylist = require("../methods/updateFallbackPlaylist");
+const changePlaybackDevice = require("../methods/changePlaybackDevice");
 
 require("dotenv").config();
 
@@ -56,5 +57,6 @@ Party.prototype.updateCurrentTrack = updateCurrentTrack;
 Party.prototype.activate = activate;
 Party.prototype.deactivate = deactivate;
 Party.prototype.updateFallbackPlaylist = updateFallbackPlaylist;
+Party.prototype.changePlaybackDevice = changePlaybackDevice;
 
 module.exports = Party;

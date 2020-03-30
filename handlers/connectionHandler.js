@@ -18,6 +18,7 @@ async function connectionHandler(socket, party){
 			socket.on("activate-party", function (){ party.activate(socket); });
 			socket.on("deactivate-party", function (){ party.deactivate(socket); });
 			socket.on("update-fallback", function (data){ party.updateFallbackPlaylist(data, socket); });
+			socket.on("change-playback-device", function (data){ party.changePlaybackDevice(data, socket); });
 		}
 	}catch(err){
 		throw new Error(err);
