@@ -41,7 +41,8 @@ class Party extends SpotifyWebApi{
 	start(){
 		this.io.to(this.code);
 
-		spotifyHandler(this);
+		if(this.active)
+			spotifyHandler(this);
 
 		this.io.on("connection", socket => {
 			connectionHandler(socket, this);
