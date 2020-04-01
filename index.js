@@ -1,4 +1,6 @@
-const server = require("http").createServer();
+const server = require("http").createServer( (_, res) => {
+	res.setHeader("Access-Control-Allow-Origin", "*");
+});
 const io = require("socket.io")(server);
 const controller = require("./controller");
 
